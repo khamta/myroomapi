@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+}
+
+model User {
+  id     Int    @id() @default(autoincrement())
+  name   String
+  user   String
+  pass   String
+  level  String @default("user") //user, admin
+  status String @default("use") // use, delete
+}
+
+model Room {
+  id              Int              @id() @default(autoincrement())
+  name            String
+  price           Int
+  status          String           @default("use") //use, delete
+  RoomImages      RoomImage[]
+  RoomRentDetails RoomRentDetail[]
+}
+
+model RoomImage {
+  id     Int    @id() @default(autoincrement())
+  name   String
+  roomId Int
+  Room   Room   @relation(fields: [roomId], references: [id])
+}
+
+model RoomRent {
+  id              Int              @id() @default(autoincrement())
+  customerName    String
+  customerPhone   String
+  rentDate        DateTime
+  checkinDate     DateTime
+  checkoutDate    DateTime
+  fine            Int?
+  remark          String?
+  RoomRentDetails RoomRentDetail[]
+  payDate         DateTime? //ວັນທີ່ຊຳລະເງິນ
+}
+
+model RoomRentDetail {
+  id         Int      @id() @default(autoincrement())
+  roomId     Int
+  roomRentId Int
+  Room       Room     @relation(fields: [roomId], references: [id])
+  RoomRent   RoomRent @relation(fields: [roomRentId], references: [id])
+}
